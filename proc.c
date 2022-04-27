@@ -355,6 +355,49 @@ scheduler(void)
   }
 }
 
+void execute_slice(struct cpu* c, struct proc* p) {
+    if (p->state != RUNNABLE) { return; }
+    c->proc = p;
+    switchuvm(p);
+    p->state = RUNNING;
+    swtch(&(c->scheduler), p->context);
+    switchkvm();
+    c->proc = 0;
+}
+
+int settickets(int num) {
+    if (num < 1) { return -1; }
+    struct proc* curproc = myproc();
+    curproc->tickets = num;
+    return 0;
+}
+
+//Returns the number of tickets from a queue
+int gettickets(int priority) {
+    struct proc* p;
+    int total_tickets = 0;
+    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+        if ((p->state == RUNNABLE) || (p->priority == priority)) {
+            total_tickets += p->tickets;
+        }
+    }
+    return total_tickets;
+}
+
+struct proc* getproccess(int priority, int ticket_num) {
+    struct proc* p;
+    int count = 0;
+    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+        if ((p->state != RUNNABLE) || (p->priority != priority)) { continue; }
+        if ((count + p->tickets) < ticket_num) {
+            count += p->tickets;
+            continue;
+        }
+        return p;
+    }
+    return 0;
+}
+
 // Enter scheduler.  Must hold only ptable.lock
 // and have changed proc->state. Saves and restores
 // intena because intena is a property of this
