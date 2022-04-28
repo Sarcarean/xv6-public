@@ -347,6 +347,8 @@ scheduler(void)
           execute_slice(c, p);
       }
 
+      printf(1, "High count: %d\n", high_count);
+
       if (high_count > 0) {
           high_count = 0;
       }
