@@ -339,21 +339,13 @@ scheduler(void) {
         // Loop over process table looking for process to run.
         acquire(&ptable.lock);
 
-        //resetting the variables to make scheduler start from the beginning of the process queue
         golden_ticket = 0;
         count = 0;
-        total_no_tickets = 0;
-
-        //calculate Total number of tickets for runnable processes  
-
-        total_no_tickets = lottery_Total();
-
-        //pick a random ticket from total available tickets
+        total_no_tickets = gettickets(1);
         golden_ticket = random_at_most(total_no_tickets);
 
         for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-            if (p->state != RUNNABLE)
-                continue;
+            if (p->state != RUNNABLE) { continue; }
 
             //find the process which holds the lottery winning ticket 
             if ((count + p->tickets) < golden_ticket) {
