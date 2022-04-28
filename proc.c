@@ -7,7 +7,6 @@
 #include "proc.h"
 #include "spinlock.h"
 #include "rand.h"
-#include "user.h"
 
 struct {
   struct spinlock lock;
@@ -328,8 +327,8 @@ scheduler(void)
   struct proc *p;
   struct cpu *c = mycpu();
   int high_count;
-  //int low_count;
-  //int winning_ticket;
+  int low_count;
+  int winning_ticket;
 
   c->proc = 0;
   
@@ -340,20 +339,32 @@ scheduler(void)
       // Loop over process table looking for process to run.
       acquire(&ptable.lock);
 
-
       high_count = gettickets(1);     // Get number of tickets from high priority
+      low_count = gettickets(0);      // Get bumber of tickets from low priority
 
-
-      for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {   
+      if (high_count > 0) {           // Execute items from high priority queue first
+          winning_ticket = random_at_most(high_count);
+          p = getproccess(1, winning_ticket);
+          p->priority = 0;            // Move to low priority for next time
           execute_slice(c, p);
+      } else if (low_count > 0) {     // Only low priority queue remains
+          winning_ticket = random_at_most(low_count);
+          p = getproccess(0, winning_ticket);
+          execute_slice(c, p);            //Execute once
       }
 
-      printf(1, "High count: %d\n", high_count);
+      //for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {   
+      //    execute_slice(c, p);
+      //}
+
+
 
       if (high_count > 0) {
           high_count = 0;
       }
-
+      if (low_count > 0) {
+          low_count = 0;
+      }
 
       release(&ptable.lock);
 
