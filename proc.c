@@ -326,10 +326,10 @@ wait(void)
 
 void
 scheduler(void) {
-    //struct proc* p;
+    struct proc* p;
     struct cpu* c = mycpu();
     
-    long golden_ticket = 0;
+    long winning_ticket = 0;
     int total_no_tickets = 0;
 
     for (;;) {
@@ -339,20 +339,22 @@ scheduler(void) {
         // Loop over process table looking for process to run.
         acquire(&ptable.lock);
 
+
+
         total_no_tickets = gettickets(1);
-        if (total_no_tickets == 0) { continue;  }
-        golden_ticket = random_at_most(total_no_tickets);
-        
-        execute_ticket_winner(c, 1, golden_ticket);
+        if (total_no_tickets > 0) { 
+            winning_ticket = random_at_most(total_no_tickets);
 
+            //execute_ticket_winner(c, 1, winning_ticket);
+            p = getproccess(1, winning_ticket);
 
+        }
 
 
         release(&ptable.lock);
 
     }
 }
-
 
 void execute_slice(struct cpu* c, struct proc* p) {
     if (p->state != RUNNABLE) { return; }
