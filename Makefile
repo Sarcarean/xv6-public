@@ -4,6 +4,7 @@ OBJS = \
 	exec.o\
 	file.o\
 	fs.o\
+      hw2.o\
 	ide.o\
 	ioapic.o\
 	kalloc.o\
@@ -181,6 +182,7 @@ UPROGS=\
 	_stressfs\
 	_usertests\
 	_wc\
+      _hw2\
 	_zombie\
 
 fs.img: mkfs README $(UPROGS)
