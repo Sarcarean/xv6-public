@@ -343,12 +343,11 @@ scheduler(void) {
         total_no_tickets = gettickets(1);
         if (total_no_tickets > 0) { 
             winning_ticket = random_at_most(total_no_tickets);
-            //execute_ticket_winner(c, 1, winning_ticket);
-            p = getproccess(1, winning_ticket);
+            execute_ticket_winner(c, 1, winning_ticket);
+            //p = getproccess(1, winning_ticket);
             //p->priority = 0;            // Move to low priority for next time
-            execute_slice(c, p);
+            //execute_slice(c, p);
         }
-
 
         release(&ptable.lock);
 
