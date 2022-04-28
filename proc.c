@@ -373,7 +373,6 @@ void
 scheduler(void) {
     struct proc* p;
     struct cpu* c = mycpu();
-    int count = 0;
     long golden_ticket = 0;
     int total_no_tickets = 0;
 
@@ -383,34 +382,27 @@ scheduler(void) {
 
         acquire(&ptable.lock);
 
-        //resetting the variables to make scheduler start from the beginning of the process queue
+
         golden_ticket = 0;
-        count = 0;
-        total_no_tickets = 0;
-
-        //calculate Total number of tickets for runnable processes  
-
         total_no_tickets = gettickets(1);
-
-        //pick a random ticket from total available tickets
+        if (total_no_tickets == 0) { continue;  }
         golden_ticket = random_at_most(total_no_tickets);
 
-        for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-            if (p->state != RUNNABLE)
-                continue;
-
-            //find the process which holds the lottery winning ticket 
-            if ((count + p->tickets) < golden_ticket) {
-                count += p->tickets;
-                continue;
-            }
-
-            execute_slice(c, p);            //Execute once
-
-            break;
-        }
+        p = getproccess(1, golden_ticket);
+        execute_slice(c, p);
 
 
+        //for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+        //    if (p->state != RUNNABLE)
+        //        continue;
+        //    //find the process which holds the lottery winning ticket 
+        //    if ((count + p->tickets) < golden_ticket) {
+        //        count += p->tickets;
+        //        continue;
+        //    }
+        //    execute_slice(c, p); 
+        //    break;
+        //}
 
         release(&ptable.lock);
 
@@ -450,10 +442,11 @@ struct proc* getproccess(int priority, int ticket_num) {
     struct proc* p;
     int count = 0;
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-        if ((p->state != RUNNABLE) && (p->priority != priority)) { continue; }
-        if ((count + p->tickets) < ticket_num) {
-            count += p->tickets;
-            continue;
+        if ((p->state == RUNNABLE) && (p->priority == priority)) { 
+            if ((count + p->tickets) < ticket_num) {
+                count += p->tickets;
+                continue;
+            }
         }
         return p;
     }
