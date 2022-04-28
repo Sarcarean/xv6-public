@@ -91,6 +91,12 @@ sys_uptime(void)
   return xticks;
 }
 
+int sys_settickets(void) {
+    int num;
+    if (argint(0, &num) < 0) { return -1; }
+    return settickets(num);
+}
+
 int sys_getpinfo(void) {
     struct pstat* st;
     if (argptr(0, (void*)&st, sizeof(*st)) < 0) { return -1; }
