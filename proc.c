@@ -359,19 +359,20 @@ void scheduler(void) {
 }
 
 void execute_slice(struct cpu* c, struct proc* p) {
+    int total_ticks = 0;
     if (p->state != RUNNABLE) { return; }
     c->proc = p;
     switchuvm(p);
     p->state = RUNNING;
-    //count ticks here
-    
-    p->current_ticks = ticks;
-
+    p->current_ticks = ticks;                  // Start counting CPU ticks here
     swtch(&(c->scheduler), p->context);
     switchkvm();
-
-    //end count here
-    
+    total_ticks = ticks - (p->current_ticks);
+    if (p->priority) {
+        p->hticks += total_ticks;
+    } else {
+        p->lticks += total_ticks;
+    } 
     c->proc = 0;
 }
 
@@ -403,8 +404,8 @@ void execute_ticket(struct cpu* c, bool priority, long winning_ticket) {
                 count += p->tickets;
                 continue;
             }
-            p->priority = false;
             execute_slice(c, p);
+            p->priority = false;
             break;
         }
     }
