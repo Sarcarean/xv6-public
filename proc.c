@@ -388,21 +388,21 @@ scheduler(void) {
         if (total_no_tickets == 0) { continue;  }
         golden_ticket = random_at_most(total_no_tickets);
 
-        p = getproccess(1, golden_ticket);
-        execute_slice(c, p);
 
+        //p = getproccess(1, golden_ticket);
+        //execute_slice(c, p);
 
-        //for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-        //    if (p->state != RUNNABLE)
-        //        continue;
-        //    //find the process which holds the lottery winning ticket 
-        //    if ((count + p->tickets) < golden_ticket) {
-        //        count += p->tickets;
-        //        continue;
-        //    }
-        //    execute_slice(c, p); 
-        //    break;
-        //}
+        for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+            if (p->state != RUNNABLE)
+                continue;
+            //find the process which holds the lottery winning ticket 
+            if ((count + p->tickets) < golden_ticket) {
+                count += p->tickets;
+                continue;
+            }
+            execute_slice(c, p); 
+            break;
+        }
 
         release(&ptable.lock);
 
