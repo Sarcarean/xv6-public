@@ -343,7 +343,7 @@ scheduler(void) {
         total_no_tickets = gettickets(1);
         if (total_no_tickets > 0) { 
             winning_ticket = random_at_most(total_no_tickets);
-            execute_ticket_winner(c, 1, winning_ticket);
+            execute_ticket(c, 1, winning_ticket);
             //p = getproccess(1, winning_ticket);
             //p->priority = 0;            // Move to low priority for next time
             //execute_slice(c, p);
@@ -383,18 +383,19 @@ int gettickets(int priority) {
     return total_tickets;
 }
 
-void execute_ticket_winner(struct cpu* c, int priority, long golden_ticket) {
+void execute_ticket(struct cpu* c, int priority, long winning_ticket) {
     struct proc* p;
     int count = 0;
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-        if (p->state != RUNNABLE) { continue; }
-        //find the process which holds the lottery winning ticket 
-        if ((count + p->tickets) < golden_ticket) {
-            count += p->tickets;
-            continue;
+        //if (p->state != RUNNABLE) { continue; }
+        if ((p->state == RUNNABLE) && (p->priority == priority)) {
+            if ((count + p->tickets) < winning_ticket) {
+                count += p->tickets;
+                continue;
+            }
+            execute_slice(c, p);
+            break;
         }
-        execute_slice(c, p);
-        break;
     }
 }
 
