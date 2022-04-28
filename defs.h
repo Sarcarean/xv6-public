@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 struct buf;
 struct context;
 struct file;
