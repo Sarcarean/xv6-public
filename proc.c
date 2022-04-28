@@ -322,94 +322,68 @@ wait(void)
 //  - swtch to start running that process
 //  - eventually that process transfers control
 //      via swtch back to the scheduler.
-//void
-//scheduler(void)
-//{
-//  struct proc *p;
-//  struct cpu *c = mycpu();
-//  int high_count;
-//  int low_count;
-//  //int winning_ticket;
-//
-//  c->proc = 0;
-//  
-//  for (;;) {
-//      // Enable interrupts on this processor.
-//      sti();
-//
-//      // Loop over process table looking for process to run.
-//      acquire(&ptable.lock);
-//
-//      //high_count = gettickets(1);     // Get number of tickets from high priority
-//      //low_count = gettickets(0);      // Get bumber of tickets from low priority
-//
-//      //if (high_count > 0) {           // Execute items from high priority queue first
-//      //    winning_ticket = random_at_most(high_count);
-//      //    p = getproccess(1, winning_ticket);
-//      //    p->priority = 0;            // Move to low priority for next time
-//      //    execute_slice(c, p);
-//      //} else if (low_count > 0) {     // Only low priority queue remains
-//      //    winning_ticket = random_at_most(low_count);
-//      //    p = getproccess(0, winning_ticket);
-//      //    execute_slice(c, p);            //Execute once
-//      //}
-//
-//      for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {   
-//          execute_slice(c, p);
-//      }
-//
-//
-//
-//      if (high_count > 0) { high_count = 0; }
-//      if (low_count > 0) { low_count = 0; }
-//
-//      release(&ptable.lock);
-//
-//  }
-//}
 
 
 void
 scheduler(void) {
     struct proc* p;
-    struct cpu* c = mycpu();
+    int foundproc = 1;
+    int count = 0;
     long golden_ticket = 0;
     int total_no_tickets = 0;
-    int count;
 
     for (;;) {
         // Enable interrupts on this processor.
         sti();
 
+        if (!foundproc) hlt();
+        foundproc = 0;
+
+        // Loop over process table looking for process to run.
         acquire(&ptable.lock);
 
-
+        //resetting the variables to make scheduler start from the beginning of the process queue
         golden_ticket = 0;
-        total_no_tickets = gettickets(1);
-        if (total_no_tickets == 0) { continue;  }
+        count = 0;
+        total_no_tickets = 0;
+
+        //calculate Total number of tickets for runnable processes  
+
+        total_no_tickets = lottery_Total();
+
+        //pick a random ticket from total available tickets
         golden_ticket = random_at_most(total_no_tickets);
 
-
-        //p = getproccess(1, golden_ticket);
-        //execute_slice(c, p);
-
-        count = 0;
         for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
             if (p->state != RUNNABLE)
                 continue;
+
             //find the process which holds the lottery winning ticket 
             if ((count + p->tickets) < golden_ticket) {
                 count += p->tickets;
                 continue;
             }
-            execute_slice(c, p); 
+
+            // Switch to chosen process.  It is the process's job
+            // to release ptable.lock and then reacquire it
+            // before jumping back to us.
+            foundproc = 1;
+            proc = p;
+            switchuvm(p);
+            p->state = RUNNING;
+            swtch(&cpu->scheduler, proc->context);
+            switchkvm();
+
+            // Process is done running for now.
+            // It should have changed its p->state before coming back.
+            proc = 0;
             break;
         }
-
         release(&ptable.lock);
 
     }
 }
+
 
 void execute_slice(struct cpu* c, struct proc* p) {
     if (p->state != RUNNABLE) { return; }
