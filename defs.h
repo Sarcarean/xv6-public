@@ -119,7 +119,7 @@ void            execute_slice(struct cpu* c, struct proc* p);
 int             settickets(int num);
 int             gettickets(bool priority);
 void            execute_ticket(struct cpu* c, bool priority, long golden_ticket);
-struct proc* getproccess(bool priority, int ticket_count);
+int             getpinfo(struct pstat*)
 void            sched(void);
 void            setproc(struct proc*);
 void            sleep(void*, struct spinlock*);

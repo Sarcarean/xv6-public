@@ -325,11 +325,8 @@ wait(void)
 //      via swtch back to the scheduler.
 
 
-void
-scheduler(void) {
-    //struct proc* p;
-    struct cpu* c = mycpu();
-    
+void scheduler(void) {
+    struct cpu* c = mycpu();  
     long winning_ticket = 0;
     int tickets_priority;
     int tickets_normal;
@@ -403,20 +400,15 @@ void execute_ticket(struct cpu* c, bool priority, long winning_ticket) {
     }
 }
 
-struct proc* getproccess(bool priority, int ticket_num) {
-    struct proc* p;
-    int count = 0;
-    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-        if ((p->state == RUNNABLE) && (p->priority == priority)) {
-            if ((count + p->tickets) < ticket_num) {
-                count += p->tickets;
-                continue;
-            }
-        }
-        return p;
-    }
+int getpinfo(struct pstat*) {
+
     return 0;
+
+
 }
+
+
+
 
 // Enter scheduler.  Must hold only ptable.lock
 // and have changed proc->state. Saves and restores
