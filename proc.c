@@ -379,7 +379,6 @@ int gettickets(int priority) {
     return total_tickets;
 }
 
-
 void execute_ticket_winner(struct cpu* c, int priority, long golden_ticket) {
     int count = 0;
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
