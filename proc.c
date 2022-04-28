@@ -415,7 +415,6 @@ int getpinfo(struct pstat* p_stat) {
     struct proc* p;
     int i = 0;
 
-    //if (p_stat == NULL) { return -1; }
     acquire(&ptable.lock);
 
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
@@ -425,7 +424,6 @@ int getpinfo(struct pstat* p_stat) {
             p_stat->inuse[i] = 0;
         }
         p_stat->pid[i] = p->pid;
-        //p_stat->tickets[i] = p->tickets;
         p_stat->hticks[i] = p->hticks;
         p_stat->lticks[i] = p->lticks;
         i++;
