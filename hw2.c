@@ -9,9 +9,6 @@ int main(void) {
     struct pstat p_stat;
 
     printf(1, "HW2 - Scheduler\n");
-    //int num_calls = getsyscallinfo();
-    //printf(1, "System calls: %d\n", num_calls);
-
     getpinfo(&p_stat);
     printf(1, "PID\tTicks (high)\tTicks (Low)\n");
     for (i = 0; i < NPROC; ++i) {
