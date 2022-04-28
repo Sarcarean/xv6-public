@@ -365,7 +365,7 @@ void execute_slice(struct cpu* c, struct proc* p) {
     p->state = RUNNING;
     //count ticks here
     
-    p->ticks = ticks;
+    //p->current_ticks = ticks;
 
     swtch(&(c->scheduler), p->context);
     switchkvm();
