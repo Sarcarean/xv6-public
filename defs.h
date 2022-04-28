@@ -116,7 +116,7 @@ void            scheduler(void) __attribute__((noreturn));
 void            execute_slice(struct cpu* c, struct proc* p);
 int             settickets(int num);
 int             gettickets(int priority);
-void            execute_ticket_winner(struct cpu* c, int priority, long golden_ticket);
+void            execute_ticket(struct cpu* c, int priority, long golden_ticket);
 struct proc* getproccess(int priority, int ticket_count);
 void            sched(void);
 void            setproc(struct proc*);
