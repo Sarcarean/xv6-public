@@ -8,6 +8,7 @@
 #include "proc.h"
 #include "spinlock.h"
 #include "rand.h"
+#include "pstat.h"
 
 struct {
   struct spinlock lock;
@@ -92,7 +93,9 @@ found:
   p->pid = nextpid++;
   p->priority = 1;
   p->tickets = 1;
-
+  p->hticks = 0;
+  p->lticks = 0;
+  
   release(&ptable.lock);
 
   // Allocate kernel stack.
@@ -360,8 +363,15 @@ void execute_slice(struct cpu* c, struct proc* p) {
     c->proc = p;
     switchuvm(p);
     p->state = RUNNING;
+    //count ticks here
+    
+    p->ticks = ticks;
+
     swtch(&(c->scheduler), p->context);
     switchkvm();
+
+    //end count here
+    
     c->proc = 0;
 }
 
@@ -400,15 +410,30 @@ void execute_ticket(struct cpu* c, bool priority, long winning_ticket) {
     }
 }
 
-int getpinfo(struct pstat*) {
+int getpinfo(struct pstat* p_stat) {
+    struct proc* p;
+    int i = 0;
+
+    if (p_stat == NULL) { return -1; }
+    acquire(&ptable.lock);
+
+    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+        if (p->state == RUNNING) {
+            p_stat->inuse[i] = 1;
+        } else {
+            p_stat->inuse[i] = 0;
+        }
+        p_stat->pid[i] = p->pid;
+        //p_stat->tickets[i] = p->tickets;
+        p_stat->hticks[i] = p->hticks;
+        p_stat->lticks[i] = p->lticks;
+        i++;
+    }
+
+    release(&ptable.lock);
 
     return 0;
-
-
 }
-
-
-
 
 // Enter scheduler.  Must hold only ptable.lock
 // and have changed proc->state. Saves and restores

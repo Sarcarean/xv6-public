@@ -51,8 +51,11 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
-  bool priority;                // Indicates priority queue
-  long tickets;                 // How many tickets a process gets for CPU time
+  bool priority;               // Indicates priority queue
+  long tickets;                // How many tickets a process gets for CPU time
+  int ticks;				   // Current tick count
+  int hticks;                  // the number of ticks each process has accumulated at HIGH priority
+  int lticks;                  // the number of ticks each process has accumulated at LOW priority
 };
 
 // Process memory is laid out contiguously, low addresses first:
