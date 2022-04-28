@@ -347,9 +347,9 @@ scheduler(void)
           execute_slice(c, p);
       }
 
-
-
-
+      if (high_count > 0) {
+          high_count = 0;
+      }
 
 
       release(&ptable.lock);
