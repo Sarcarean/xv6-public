@@ -326,7 +326,7 @@ wait(void)
 
 void
 scheduler(void) {
-    struct proc* p;
+    //struct proc* p;
     struct cpu* c = mycpu();
     
     long winning_ticket = 0;
