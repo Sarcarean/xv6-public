@@ -345,7 +345,7 @@ scheduler(void) {
         tickets_priority = gettickets(true);
         tickets_normal = gettickets(false);
 
-        if (total_no_tickets > 0) { 
+        if (tickets_priority > 0) {
             winning_ticket = random_at_most(tickets_priority);
             execute_ticket(c, true, winning_ticket);
             //p = getproccess(1, winning_ticket);
