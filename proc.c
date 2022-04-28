@@ -328,7 +328,7 @@ void
 scheduler(void) {
     struct proc* p;
     struct cpu* c = mycpu();
-    int count = 0;
+    
     long golden_ticket = 0;
     int total_no_tickets = 0;
 
@@ -339,23 +339,11 @@ scheduler(void) {
         // Loop over process table looking for process to run.
         acquire(&ptable.lock);
 
-        golden_ticket = 0;
-        count = 0;
         total_no_tickets = gettickets(1);
         golden_ticket = random_at_most(total_no_tickets);
+        execute_ticket_winner(c, 1, golden_ticket);
 
-        for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-            if (p->state != RUNNABLE) { continue; }
 
-            //find the process which holds the lottery winning ticket 
-            if ((count + p->tickets) < golden_ticket) {
-                count += p->tickets;
-                continue;
-            }
-
-            execute_slice(c, p);
-            break;
-        }
         release(&ptable.lock);
 
     }
@@ -390,6 +378,23 @@ int gettickets(int priority) {
     }
     return total_tickets;
 }
+
+
+void execute_ticket_winner(struct cpu* c, int priority, long golden_ticket) {
+    int count = 0;
+    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+        if (p->state != RUNNABLE) { continue; }
+        //find the process which holds the lottery winning ticket 
+        if ((count + p->tickets) < golden_ticket) {
+            count += p->tickets;
+            continue;
+        }
+        execute_slice(c, p);
+        break;
+    }
+
+}
+
 
 struct proc* getproccess(int priority, int ticket_num) {
     struct proc* p;

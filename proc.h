@@ -50,7 +50,7 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
   int priority;                // Indicates priority queue
-  int tickets;                 // How many tickets a process gets for CPU time
+  long tickets;                 // How many tickets a process gets for CPU time
 };
 
 // Process memory is laid out contiguously, low addresses first:
