@@ -341,7 +341,6 @@ scheduler(void) {
         // Loop over process table looking for process to run.
         acquire(&ptable.lock);
 
-
         tickets_priority = gettickets(true);
         tickets_normal = gettickets(false);
 
@@ -353,6 +352,7 @@ scheduler(void) {
             //execute_slice(c, p);
         } else if (tickets_normal > 0) {
             winning_ticket = random_at_most(tickets_normal);
+            execute_ticket(c, false, winning_ticket);
             execute_ticket(c, false, winning_ticket);
         }
 
