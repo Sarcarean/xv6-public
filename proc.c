@@ -324,6 +324,10 @@ scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
+  int high_count;
+  int low_count;
+  int winning_ticket;
+
   c->proc = 0;
   
   for(;;){
