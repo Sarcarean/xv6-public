@@ -368,7 +368,7 @@ void execute_slice(struct cpu* c, struct proc* p) {
     swtch(&(c->scheduler), p->context);
     switchkvm();
     total_ticks = ticks - (p->current_ticks);
-    if (p->priority) {
+    if (p->priority) {                         // Total up the total ticks
         p->hticks += total_ticks;
     } else {
         p->lticks += total_ticks;
