@@ -330,7 +330,8 @@ scheduler(void) {
     struct cpu* c = mycpu();
     
     long winning_ticket = 0;
-    int total_no_tickets = 0;
+    int tickets_priority;
+    int tickets_normal;
 
     for (;;) {
         // Enable interrupts on this processor.
@@ -340,13 +341,18 @@ scheduler(void) {
         acquire(&ptable.lock);
 
 
-        total_no_tickets = gettickets(1);
+        tickets_priority = gettickets(true);
+        tickets_normal = gettickets(false);
+
         if (total_no_tickets > 0) { 
-            winning_ticket = random_at_most(total_no_tickets);
-            execute_ticket(c, 1, winning_ticket);
+            winning_ticket = random_at_most(tickets_priority);
+            execute_ticket(c, true, winning_ticket);
             //p = getproccess(1, winning_ticket);
             //p->priority = 0;            // Move to low priority for next time
             //execute_slice(c, p);
+        } else if (tickets_normal > 0) {
+            winning_ticket = random_at_most(tickets_normal);
+            execute_ticket(c, false, winning_ticket);
         }
 
         release(&ptable.lock);
@@ -372,7 +378,7 @@ int settickets(int num) {
 }
 
 //Returns the number of tickets from a queue
-int gettickets(int priority) {
+int gettickets(bool priority) {
     struct proc* p;
     int total_tickets = 0;
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
@@ -383,27 +389,27 @@ int gettickets(int priority) {
     return total_tickets;
 }
 
-void execute_ticket(struct cpu* c, int priority, long winning_ticket) {
+void execute_ticket(struct cpu* c, bool priority, long winning_ticket) {
     struct proc* p;
     int count = 0;
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-        //if (p->state != RUNNABLE) { continue; }
         if ((p->state == RUNNABLE) && (p->priority == priority)) {
             if ((count + p->tickets) < winning_ticket) {
                 count += p->tickets;
                 continue;
             }
+            p->priority = false;
             execute_slice(c, p);
             break;
         }
     }
 }
 
-struct proc* getproccess(int priority, int ticket_num) {
+struct proc* getproccess(bool priority, int ticket_num) {
     struct proc* p;
     int count = 0;
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-        if ((p->state == RUNNABLE) && (p->priority == priority)) { 
+        if ((p->state == RUNNABLE) && (p->priority == priority)) {
             if ((count + p->tickets) < ticket_num) {
                 count += p->tickets;
                 continue;
