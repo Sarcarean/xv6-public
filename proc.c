@@ -375,6 +375,7 @@ scheduler(void) {
     struct cpu* c = mycpu();
     long golden_ticket = 0;
     int total_no_tickets = 0;
+    int count;
 
     for (;;) {
         // Enable interrupts on this processor.
@@ -392,6 +393,7 @@ scheduler(void) {
         //p = getproccess(1, golden_ticket);
         //execute_slice(c, p);
 
+        count = 0;
         for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
             if (p->state != RUNNABLE)
                 continue;
