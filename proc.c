@@ -340,8 +340,12 @@ scheduler(void) {
         acquire(&ptable.lock);
 
         total_no_tickets = gettickets(1);
+        if (total_no_tickets == 0) { continue;  }
         golden_ticket = random_at_most(total_no_tickets);
+        
         execute_ticket_winner(c, 1, golden_ticket);
+
+
 
 
         release(&ptable.lock);
@@ -392,9 +396,7 @@ void execute_ticket_winner(struct cpu* c, int priority, long golden_ticket) {
         execute_slice(c, p);
         break;
     }
-
 }
-
 
 struct proc* getproccess(int priority, int ticket_num) {
     struct proc* p;
