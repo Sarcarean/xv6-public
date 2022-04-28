@@ -7,8 +7,7 @@
 int main(void) {
     int i;
     struct pstat p_stat;
-
-    printf(1, "HW2 - Scheduler\n");
+    printf(1, "HW2 - Scheduler and PSStat\\n");
     getpinfo(&p_stat);
     printf(1, "PID\tTicks (high)\tTicks (Low)\n");
     for (i = 0; i < NPROC; ++i) {
@@ -16,6 +15,5 @@ int main(void) {
             printf(1, "%d\t%d\t%d\n", p_stat.pid[i], p_stat.hticks[i], p_stat.lticks[i]);
         }
     }
-
     exit();
 }
