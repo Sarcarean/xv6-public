@@ -380,6 +380,7 @@ int gettickets(int priority) {
 }
 
 void execute_ticket_winner(struct cpu* c, int priority, long golden_ticket) {
+    struct proc* p;
     int count = 0;
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
         if (p->state != RUNNABLE) { continue; }
