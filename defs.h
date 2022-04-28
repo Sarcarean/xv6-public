@@ -1,3 +1,4 @@
+#include "pstat.h"
 #include <stdbool.h>
 
 struct buf;
