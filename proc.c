@@ -330,30 +330,22 @@ scheduler(void)
     // Enable interrupts on this processor.
     sti();
 
-    // Loop over process table looking for process to run.
     acquire(&ptable.lock);
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      //if(p->state != RUNNABLE)
-      //  continue;
 
-      // Switch to chosen process.  It is the process's job
-      // to release ptable.lock and then reacquire it
-      // before jumping back to us.
-      //c->proc = p;
-      //switchuvm(p);
-      //p->state = RUNNING;
-
-      //swtch(&(c->scheduler), p->context);
-      //switchkvm();
-
-      // Process is done running for now.
-      // It should have changed its p->state before coming back.
-      //c->proc = 0;
-
+    high_count = gettickets(1);     // Get number of tickets from high priority
+    low_count = gettickets(0);      // Get bumber of tickets from low priority
+    if (high_count > 0) {           // Execute items from high priority queue first
+        winning_ticket = random_at_most(high_count);
+        p = getproccess(1, winning_ticket);
+        p->priority = 0;            // Move to low priority for next time
         execute_slice(c, p);
-
-
+    } else if (low_count > 0) {     // Only low priority queue remains
+        winning_ticket = random_at_most(low_count);
+        p = getproccess(0, winning_ticket);
+        execute_slice(c, p);            //Execute once
+        //execute_slice(c, p);            //Execute twice
     }
+
     release(&ptable.lock);
 
   }
