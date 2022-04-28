@@ -4,8 +4,7 @@
 #include "stat.h"
 #include "user.h"
 
-int
-main(void) {
+int main(void) {
     printf(1, "HW2 - Scheduler\n");
 
     //int num_calls = getsyscallinfo();
