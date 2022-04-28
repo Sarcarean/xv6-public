@@ -97,8 +97,7 @@ int sys_settickets(void) {
     return settickets(num);
 }
 
-int sys_getpinfo(void) {
-    struct pstat* st;
+int sys_getpinfo(struct pstat* st) {
     if (argptr(0, (void*)&st, sizeof(*st)) < 0) { return -1; }
     getpinfo(st);
     return 0;

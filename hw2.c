@@ -2,14 +2,14 @@
 #include "types.h"
 #include "stat.h"
 #include "user.h"
-
-
+#include "pstat.h"
 
 int main(void) {
     printf(1, "HW2 - Scheduler\n");
     //int num_calls = getsyscallinfo();
     //printf(1, "System calls: %d\n", num_calls);
-    int rc, i;
+    int rc
+    int i;
     struct pstat ps;
     rc = getpinfo(&ps);
     if (rc < 0) {
