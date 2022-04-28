@@ -347,9 +347,6 @@ scheduler(void) {
         if (tickets_priority > 0) {
             winning_ticket = random_at_most(tickets_priority);
             execute_ticket(c, true, winning_ticket);
-            //p = getproccess(1, winning_ticket);
-            //p->priority = 0;            // Move to low priority for next time
-            //execute_slice(c, p);
         } else if (tickets_normal > 0) {
             winning_ticket = random_at_most(tickets_normal);
             execute_ticket(c, false, winning_ticket);
