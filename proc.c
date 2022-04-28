@@ -327,6 +327,7 @@ wait(void)
 void
 scheduler(void) {
     struct proc* p;
+    struct cpu* c = mycpu();
     int foundproc = 1;
     int count = 0;
     long golden_ticket = 0;
@@ -335,9 +336,6 @@ scheduler(void) {
     for (;;) {
         // Enable interrupts on this processor.
         sti();
-
-        if (!foundproc) hlt();
-        foundproc = 0;
 
         // Loop over process table looking for process to run.
         acquire(&ptable.lock);
@@ -364,19 +362,7 @@ scheduler(void) {
                 continue;
             }
 
-            // Switch to chosen process.  It is the process's job
-            // to release ptable.lock and then reacquire it
-            // before jumping back to us.
-            foundproc = 1;
-            proc = p;
-            switchuvm(p);
-            p->state = RUNNING;
-            swtch(&cpu->scheduler, proc->context);
-            switchkvm();
-
-            // Process is done running for now.
-            // It should have changed its p->state before coming back.
-            proc = 0;
+            execute_slice(c, p);
             break;
         }
         release(&ptable.lock);
