@@ -365,7 +365,7 @@ void execute_slice(struct cpu* c, struct proc* p) {
     p->state = RUNNING;
     //count ticks here
     
-    //p->current_ticks = ticks;
+    p->current_ticks = ticks;
 
     swtch(&(c->scheduler), p->context);
     switchkvm();
@@ -414,7 +414,7 @@ int getpinfo(struct pstat* p_stat) {
     struct proc* p;
     int i = 0;
 
-    if (p_stat == NULL) { return -1; }
+    //if (p_stat == NULL) { return -1; }
     acquire(&ptable.lock);
 
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
