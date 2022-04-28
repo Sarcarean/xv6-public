@@ -112,7 +112,8 @@ found:
   p->context = (struct context*)sp;
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
-
+  p->priority = 1;
+  p->tickets = 1;
   return p;
 }
 
@@ -325,9 +326,9 @@ scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
-  //int high_count = 0;
-  //int low_count = 0;
-  //int winning_ticket = 0;
+  int high_count;
+  //int low_count;
+  //int winning_ticket;
 
   c->proc = 0;
   
@@ -337,9 +338,20 @@ scheduler(void)
 
       // Loop over process table looking for process to run.
       acquire(&ptable.lock);
-      for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+
+
+      high_count = gettickets(1);     // Get number of tickets from high priority
+
+
+      for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {   
           execute_slice(c, p);
       }
+
+
+
+
+
+
       release(&ptable.lock);
 
   }
@@ -367,7 +379,7 @@ int gettickets(int priority) {
     struct proc* p;
     int total_tickets = 0;
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-        if ((p->state == RUNNABLE) || (p->priority == priority)) {
+        if ((p->state == RUNNABLE) && (p->priority == priority)) {
             total_tickets += p->tickets;
         }
     }
@@ -378,7 +390,7 @@ struct proc* getproccess(int priority, int ticket_num) {
     struct proc* p;
     int count = 0;
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-        if ((p->state != RUNNABLE) || (p->priority != priority)) { continue; }
+        if ((p->state != RUNNABLE) && (p->priority != priority)) { continue; }
         if ((count + p->tickets) < ticket_num) {
             count += p->tickets;
             continue;
