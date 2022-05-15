@@ -1,8 +1,9 @@
 #include <stdio.h>
-#include <stddef.h>
 #include "types.h"
 #include "stat.h"
 #include "user.h"
+
+#define NULL 0
 
 int main(void) {
     int* pi;
