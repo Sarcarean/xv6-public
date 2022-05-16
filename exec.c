@@ -73,8 +73,6 @@ exec(char* path, char** argv) {
 
 
     // ADDED
-
-
     sz = PGROUNDUP(sz);
     if ((allocuvm(pgdir, STACKTOP - PGSIZE, STACKTOP)) == 0)
         goto bad;
