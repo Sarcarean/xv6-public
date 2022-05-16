@@ -13,6 +13,11 @@ struct gatedesc idt[256];
 extern uint vectors[];  // in vectors.S: array of 256 entry pointers
 struct spinlock tickslock;
 uint ticks;
+uint faultadd;
+struct proc* curproc;
+uint stackadd;
+
+
 
 void
 tvinit(void)
