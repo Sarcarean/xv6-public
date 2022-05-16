@@ -17,6 +17,7 @@
 int
 fetchint(uint addr, int *ip)
 {
+  if (addr == 0) { return -1; }
   if (addr >= STACKTOP) { return -1; }     
   *ip = *(int*)(addr);
   return 0;
@@ -29,6 +30,7 @@ int
 fetchstr(uint addr, char **pp)
 {
   char *s, *ep;
+  if (addr == 0) { return -1; }
   if (addr >= STACKTOP) { return -1; }
   *pp = (char*)addr;
   ep = (char*)STACKTOP;
