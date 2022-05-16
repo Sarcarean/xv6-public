@@ -38,7 +38,7 @@ exec(char* path, char** argv) {
         goto bad;
 
     // Load program into memory.
-    sz = 0;
+    sz = PGSIZE;
     for (i = 0, off = elf.phoff; i < elf.phnum; i++, off += sizeof(ph)) {
         if (readi(ip, (char*)&ph, off, sizeof(ph)) != sizeof(ph))
             goto bad;
@@ -66,6 +66,7 @@ exec(char* path, char** argv) {
     //    goto bad;
     //clearpteu(pgdir, (char*)(sz - 2 * PGSIZE));
     //sp = sz;
+
     sz = PGROUNDUP(sz);
     if ((allocuvm(pgdir, STACKTOP - PGSIZE, STACKTOP)) == 0)
         goto bad;
