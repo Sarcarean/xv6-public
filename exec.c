@@ -65,12 +65,20 @@ exec(char* path, char** argv) {
 
 
     //ORG
-    sz = PGROUNDUP(sz);
-    if ((sz = allocuvm(pgdir, sz, sz + 2 * PGSIZE)) == 0)
-        goto bad;
-    clearpteu(pgdir, (char*)(sz - 2 * PGSIZE));
-    sp = sz;
+    //sz = PGROUNDUP(sz);
+    //if ((sz = allocuvm(pgdir, sz, sz + 2 * PGSIZE)) == 0)
+    //    goto bad;
+    //clearpteu(pgdir, (char*)(sz - 2 * PGSIZE));
+    //sp = sz;
 
+
+    // ADDED
+
+
+    sz = PGROUNDUP(sz);
+    if ((allocuvm(pgdir, STACKTOP - PGSIZE, STACKTOP)) == 0)
+        goto bad;
+    sp = STACKTOP;
 
 
 

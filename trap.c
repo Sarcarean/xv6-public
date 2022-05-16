@@ -78,6 +78,26 @@ trap(struct trapframe *tf)
     lapiceoi();
     break;
 
+
+
+  case T_PGFLT:
+      faultadd = rcr2();
+      curproc = myproc();
+      stackadd = STACKTOP - (curproc->numPages * PGSIZE);
+      if (PGROUNDDOWN(faultadd <= stackadd)) {
+          pde_t* pgdir;
+          pgdir = curproc->pgdir;
+          cprintf("New page for stack\n");
+          if (allocuvm(pgdir, PGROUNDDOWN(faultadd), faultadd) == 0) {
+              panic("Failed to allocate page");
+          }
+          curproc->numPages++;
+          cprintf("New page for stack\n");
+      }
+      break;
+
+
+
   //PAGEBREAK: 13
   default:
     if(myproc() == 0 || (tf->cs&3) == 0){
