@@ -5,11 +5,15 @@
 #define NULL 0
 
 int main(void) {
-    int* pi;
-    int c;
+    //int* pi;
+    //int c;
     printf(1, "HW3 - Testing null-ptr dereference\n");
-    pi = NULL;
-    c = *pi; // this is a NULL pointer dereference
-    printf(1, "pi value = %x\n", c);
+    //pi = NULL;
+    //c = *pi; // this is a NULL pointer dereference
+    //printf(1, "pi value = %x\n", c);
+
+    struct proc* curproc = myproc();
+    printf(1, "My stack loocation = %x\n", curproc->st);
+
     exit();
 }
