@@ -13,6 +13,11 @@ struct gatedesc idt[256];
 extern uint vectors[];  // in vectors.S: array of 256 entry pointers
 struct spinlock tickslock;
 uint ticks;
+uint faultadd;
+struct proc* curproc;
+uint stackadd;
+
+
 
 void
 tvinit(void)
@@ -77,6 +82,26 @@ trap(struct trapframe *tf)
             cpuid(), tf->cs, tf->eip);
     lapiceoi();
     break;
+
+
+
+  case T_PGFLT:
+      faultadd = rcr2();
+      curproc = myproc();
+      stackadd = STACKTOP - (curproc->numPages * PGSIZE);
+      if (PGROUNDDOWN(faultadd <= stackadd)) {
+          pde_t* pgdir;
+          pgdir = curproc->pgdir;
+          cprintf("New page for stack\n");
+          if (allocuvm(pgdir, PGROUNDDOWN(faultadd), faultadd) == 0) {
+              panic("Failed to allocate page");
+          }
+          curproc->numPages++;
+          cprintf("New page for stack\n");
+      }
+      break;
+
+
 
   //PAGEBREAK: 13
   default:
