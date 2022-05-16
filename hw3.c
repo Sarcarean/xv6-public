@@ -1,8 +1,6 @@
 #include "types.h"
-#include "defs.h"
 #include "stat.h"
 #include "user.h"
-#include "proc.h"
 
 #define NULL 0
 
@@ -17,7 +15,7 @@ int main(void) {
 
     int c = 102;
 
-    printf(1, "My stack loocation = %x\n", *c);
+    printf(1, "My stack loocation = %p\n", &c);
 
     exit();
 }
