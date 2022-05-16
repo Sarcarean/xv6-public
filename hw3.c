@@ -10,12 +10,12 @@ int main(void) {
     //pi = NULL;
     //c = *pi; // this is a NULL pointer dereference
     //printf(1, "pi value = %x\n", c);
-    printf(1, "HW3 - Testing null-ptr dereference\n");
+    
     //struct proc* curproc = myproc();
 
+
+    printf(1, "HW3 - Testing null-ptr dereference\n");
     int c = 102;
-
     printf(1, "My stack loocation = %p\n", &c);
-
     exit();
 }
